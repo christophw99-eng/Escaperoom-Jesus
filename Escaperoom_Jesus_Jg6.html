@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escape Room: Auf den Spuren Jesu</title>
+<style>
+:root {
+  --gold: #c9a84c;
+  --dark-gold: #8b6914;
+  --parchment: #f5e6c8;
+  --dark-parchment: #e8d4a0;
+  --brown: #3d1f08;
+  --red: #7a1515;
+  --green: #256025;
+  --olive: #5c6b1e;
+  --blue: #1a3a6b;
+  --bg: #1a0a02;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  background-image: radial-gradient(ellipse at center, #3d2510 0%, #0f0500 100%);
+  min-height: 100vh;
+  font-family: Georgia, 'Times New Roman', serif;
+  color: var(--brown);
+  padding: 16px;
+}
+#app { max-width: 820px; margin: 0 auto; }
+
+/* ── HEADER ── */
+.main-header {
+  text-align: center;
+  padding: 28px 20px 22px;
+  background: linear-gradient(160deg, #1a0a02, #3d1f08, #1a0a02);
+  border: 3px solid var(--gold);
+  border-radius: 10px;
+  margin-bottom: 18px;
+  box-shadow: 0 0 40px rgba(201,168,76,.35);
+}
+.main-icon { font-size: 3rem; margin-bottom: 6px; }
+.main-title { font-size: 1.9rem; color: var(--gold); text-shadow: 0 0 12px rgba(201,168,76,.55); letter-spacing: 2px; margin-bottom: 6px; }
+.main-subtitle { color: #c4a472; font-size: 0.95rem; font-style: italic; line-height: 1.5; }
+
+/* ── STORY BOX ── */
+.story-box {
+  background: var(--parchment);
+  border: 2px solid var(--dark-gold);
+  border-radius: 8px;
+  padding: 18px 20px;
+  margin-bottom: 18px;
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+.story-box h2 { color: var(--dark-gold); font-size: 1.05rem; margin-bottom: 8px; }
+
+/* ── PROGRESS ── */
+.progress-wrap {
+  background: #0f0500;
+  border: 2px solid #5a3a1a;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+.progress-label { color: var(--gold); font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 8px; }
+.bar-outer { background: #2a1a0a; border-radius: 4px; height: 10px; overflow: hidden; }
+.bar-inner { background: linear-gradient(90deg, var(--dark-gold), var(--gold)); height: 100%; width: 0%; transition: width .7s ease; border-radius: 4px; }
+.steps { display: flex; justify-content: space-between; margin-top: 10px; }
+.sdot {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 2px solid #5a3a1a; background: #1a0a02;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; color: #6a4a2a; transition: all .4s;
+}
+.sdot.active { border-color: var(--gold); color: var(--gold); background: #2a1a0a; box-shadow: 0 0 8px rgba(201,168,76,.4); }
+.sdot.done { border-color: #4a8a4a; background: #1a3a1a; color: #7acc7a; }
+
+/* ── STATION CARD ── */
+.station {
+  background: var(--parchment);
+  border: 2px solid var(--dark-gold);
+  border-radius: 8px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,.5);
+  display: none;
+  animation: fadeUp .5s ease;
+}
+.station.visible { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+.shead {
+  background: linear-gradient(135deg, var(--brown), #6b3a0a);
+  padding: 13px 18px;
+  display: flex; align-items: center; gap: 12px;
+}
+.station.solved .shead { background: linear-gradient(135deg, #163016, #2a5a2a); }
+.sicon { font-size: 1.9rem; }
+.stitle-group { flex: 1; }
+.snum { color: var(--gold); font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; }
+.stitle { color: #f5e6c8; font-size: 1.15rem; font-weight: bold; }
+.solved-badge { display:none; font-size:1.6rem; }
+.station.solved .solved-badge { display:block; }
+
+.sbody { padding: 18px 20px; }
+
+.intro-note {
+  background: var(--dark-parchment);
+  border-left: 4px solid var(--dark-gold);
+  padding: 10px 14px; margin-bottom: 16px;
+  border-radius: 0 4px 4px 0;
+  font-style: italic; font-size: 0.92rem; line-height: 1.55;
+}
+
+/* ── QUESTION TYPES ── */
+.qblock { margin-bottom: 18px; }
+.qtext { font-weight: bold; margin-bottom: 9px; font-size: 0.92rem; line-height: 1.4; }
+
+.options { display:flex; flex-direction:column; gap:6px; }
+.opt-lbl {
+  display:flex; align-items:center; gap:8px;
+  padding: 8px 12px;
+  background: white; border: 1px solid #c8a86a; border-radius: 4px;
+  cursor:pointer; transition: all .2s; font-size:0.88rem;
+}
+.opt-lbl:hover { background:#fffbf0; border-color: var(--dark-gold); }
+.opt-lbl input[type=radio] { accent-color: var(--dark-gold); cursor:pointer; }
+
+/* True/False */
+.tf-row { display:flex; align-items:flex-start; gap:10px; margin-bottom:9px; flex-wrap:wrap; }
+.tf-statement { flex:1; min-width:200px; font-size:0.88rem; line-height:1.4; padding-top:4px; }
+.tf-btns { display:flex; gap:6px; }
+.tfb {
+  padding: 5px 14px; border: 2px solid #c8a86a; border-radius: 4px;
+  background:white; cursor:pointer; font-size:0.82rem; font-weight:bold;
+  transition: all .2s; font-family: Georgia, serif;
+}
+.tfb:hover { transform:scale(1.05); }
+.tfb.sel-w { background:#256025; color:white; border-color:#256025; }
+.tfb.sel-f { background:#7a1515; color:white; border-color:#7a1515; }
+
+/* Text input */
+.tinput {
+  padding: 8px 12px; border: 2px solid #c8a86a; border-radius: 4px;
+  font-size:0.9rem; font-family:Georgia,serif; width:100%; max-width:260px;
+  background:white; transition: border-color .2s;
+}
+.tinput:focus { outline:none; border-color: var(--dark-gold); }
+
+/* Matching */
+.match-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
+.match-left { font-weight:bold; font-size:0.88rem; min-width:140px; }
+.match-sel {
+  flex:1; min-width:220px; padding:7px 10px;
+  border: 2px solid #c8a86a; border-radius:4px;
+  font-size:0.82rem; font-family:Georgia,serif;
+  background:white; cursor:pointer;
+}
+.match-sel:focus { outline:none; border-color: var(--dark-gold); }
+
+/* Ordering */
+.order-list { display:flex; flex-direction:column; gap:7px; margin-bottom:10px; }
+.oitem {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 14px; background:white;
+  border: 2px solid #c8a86a; border-radius:4px;
+  cursor:pointer; transition: all .2s; font-size:0.88rem;
+  user-select:none;
+}
+.oitem:hover { background:#fffbf0; border-color: var(--dark-gold); }
+.oitem.numbered { background:#f0f8f0; border-color:#4a8a4a; }
+.onum {
+  width:26px; height:26px; border-radius:50%;
+  border: 2px solid #c8a86a; background:var(--dark-parchment);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:bold; font-size:0.8rem; color:var(--brown);
+  flex-shrink:0; transition: all .2s;
+}
+.oitem.numbered .onum { background:var(--olive); border-color:var(--olive); color:white; }
+.reset-link { font-size:0.78rem; color:var(--dark-gold); cursor:pointer; text-decoration:underline; margin-top:4px; display:inline-block; }
+
+/* ── BUTTONS ── */
+.check-btn {
+  background: linear-gradient(135deg, var(--dark-gold), var(--gold));
+  color:white; border:none; padding:11px 26px;
+  border-radius:6px; font-size:0.95rem; font-weight:bold;
+  cursor:pointer; font-family:Georgia,serif; letter-spacing:1px;
+  transition: all .2s; box-shadow:0 3px 10px rgba(0,0,0,.25);
+  margin-top:14px;
+}
+.check-btn:hover { transform:translateY(-2px); box-shadow:0 5px 15px rgba(0,0,0,.35); }
+.check-btn:active { transform:translateY(0); }
+.check-btn:disabled { opacity:.5; cursor:default; transform:none; }
+
+.hint-btn {
+  background:transparent; color:var(--dark-gold);
+  border: 1px solid var(--dark-gold); padding:5px 13px;
+  border-radius:4px; font-size:0.78rem; cursor:pointer;
+  font-family:Georgia,serif; margin-top:8px; transition: all .2s;
+  display:inline-block;
+}
+.hint-btn:hover { background:var(--dark-parchment); }
+
+/* ── FEEDBACK ── */
+.feedback { margin-top:12px; padding:10px 14px; border-radius:4px; font-size:0.88rem; display:none; }
+.feedback.err { display:block; background:#fde8e8; border:1px solid #c55; color:#7a1515; animation:shake .4s; }
+.feedback.ok { display:block; background:#e8f5e8; border:1px solid #5a5; color:#1a5a1a; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-5px)} 40%,80%{transform:translateX(5px)} }
+
+.hint-box { background:#fef9e7; border:1px dashed var(--dark-gold); border-radius:4px; padding:10px 14px; margin-top:8px; font-size:0.83rem; color:var(--brown); display:none; line-height:1.5; }
+
+hr.divider { border:none; border-top:1px solid #c8a86a; margin:16px 0; opacity:.4; }
+
+/* ── FINALE ── */
+.finale {
+  text-align:center;
+  background: linear-gradient(160deg, #0f0500, #3d1f08, #0f0500);
+  border: 3px solid var(--gold);
+  border-radius: 12px;
+  padding: 40px 24px;
+  margin: 20px 0;
+  display:none;
+  animation: fadeUp 1s ease;
+  box-shadow: 0 0 60px rgba(201,168,76,.5);
+}
+.finale.visible { display:block; }
+.finale-icon { font-size:4.5rem; margin-bottom:12px; animation:bounce 2s infinite; }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.finale-title { font-size:2rem; color:var(--gold); margin-bottom:14px; text-shadow:0 0 20px rgba(201,168,76,.7); }
+.finale-text { color:#c4a472; font-size:0.95rem; line-height:1.7; max-width:560px; margin:0 auto 18px; }
+.finale-summary {
+  background:rgba(201,168,76,.1); border:1px solid var(--dark-gold);
+  border-radius:8px; padding:16px 20px; margin:16px auto;
+  max-width:560px; text-align:left; color:#c4a472; font-size:0.88rem; line-height:1.6;
+}
+.finale-summary h3 { color:var(--gold); margin-bottom:8px; }
+.stars { font-size:1.4rem; letter-spacing:4px; margin:14px 0; }
+
+/* ── AB-CODE PANEL ── */
+.ab-panel {
+  display: none;
+  margin-top: 14px;
+  background: linear-gradient(135deg, #1a3d1a, #0f2a0f);
+  border: 2px solid #4a8a4a;
+  border-radius: 6px;
+  padding: 14px 16px;
+  animation: fadeUp .4s ease;
+}
+.ab-panel-title { color: #8acd8a; font-size: 1rem; font-weight: bold; margin-bottom: 8px; }
+.ab-panel-text { color: #c4e8c4; font-size: 0.85rem; margin-bottom: 12px; line-height: 1.5; }
+.ab-code-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ab-code-input {
+  padding: 8px 12px; border: 2px solid #4a8a4a; border-radius: 4px;
+  font-size: 1.1rem; font-family: Georgia,serif; width: 110px;
+  background: #0f2a0f; color: #8acd8a; letter-spacing: 3px;
+  text-align: center;
+}
+.ab-code-input:focus { outline: none; border-color: #8acd8a; }
+.ab-check-btn {
+  background: linear-gradient(135deg, #2d6a2d, #4a8a4a);
+  color: white; border: none; padding: 9px 20px;
+  border-radius: 5px; font-size: 0.88rem; font-weight: bold;
+  cursor: pointer; font-family: Georgia,serif;
+  transition: all .2s;
+}
+.ab-check-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,.3); }
+
+/* ── LEHRER SECTION ── */
+.lehrer-wrap {
+  background: #0f0500; border:1px solid #3a2010;
+  border-radius:6px; padding:14px; margin-top:24px;
+}
+.lehrer-toggle {
+  background:transparent; color:#6a4a2a; border:1px solid #3a2010;
+  padding:6px 14px; border-radius:4px; cursor:pointer;
+  font-size:0.78rem; font-family:Georgia,serif; width:100%; text-align:left;
+}
+.lehrer-toggle:hover { color:#8a6a4a; }
+.lehrer-content { display:none; margin-top:12px; }
+.ltable { width:100%; border-collapse:collapse; font-size:0.8rem; }
+.ltable th { background:#1a0a02; color:var(--gold); padding:6px 10px; text-align:left; }
+.ltable td { padding:6px 10px; border-bottom:1px solid #2a1a0a; color:#c4a472; vertical-align:top; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- HEADER -->
+<div class="main-header">
+  <div class="main-icon">🏺</div>
+  <div class="main-title">Auf den Spuren Jesu</div>
+  <div class="main-subtitle">Ein digitaler Escape Room für Jahrgang 6 · Religion<br>Beweise dein Wissen aus dem gesamten Schuljahr!</div>
+</div>
+
+<!-- STORY -->
+<div class="story-box">
+  <h2>📜 Deine Mission</h2>
+  In der Bibliothek des Klosters San Giovanni wurde eine verschlossene Schatztruhe entdeckt.
+  Darin sollen uralte Dokumente über das Leben Jesu von Nazareth liegen – aber die Truhe ist mit
+  <strong>6 Schlössern</strong> gesichert. Nur wer alle Rätsel löst, kann die Truhe öffnen und die
+  Geheimnisse lüften. <br><br>
+  Löse die Rätsel der Reihe nach. Erst wenn du eine Station abgeschlossen hast, öffnet sich die nächste.
+  <strong>Viel Erfolg, Zeitreise-Detektiv!</strong>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-label">FORTSCHRITT</div>
+  <div class="bar-outer"><div class="bar-inner" id="progressBar"></div></div>
+  <div class="steps">
+    <div class="sdot active" id="dot0">1</div>
+    <div class="sdot" id="dot1">2</div>
+    <div class="sdot" id="dot2">3</div>
+    <div class="sdot" id="dot3">4</div>
+    <div class="sdot" id="dot4">5</div>
+    <div class="sdot" id="dot5">6</div>
+    <div class="sdot" id="dot6">🏆</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- STATION 1: Wer war Jesus? -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="station visible" id="s1">
+  <div class="shead">
+    <div class="sicon">⭐</div>
+    <div class="stitle-group">
+      <div class="snum">Rätsel 1 von 6</div>
+      <div class="stitle">Held oder Handwerker? – Wer war Jesus?</div>
+    </div>
+    <div class="solved-badge">✅</div>
+  </div>
+  <div class="sbody">
+    <div class="intro-note">
+      Am Anfang des Schuljahres haben wir uns gefragt: Wer war Jesus eigentlich?
+      Was wissen wir sicher über ihn? Beantworte die folgenden Fragen!
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">1. In welcher Stadt wurde Jesus geboren?</div>
+      <div class="options">
+        <label class="opt-lbl"><input type="radio" name="s1q1" value="a"> Nazareth</label>
+        <label class="opt-lbl"><input type="radio" name="s1q1" value="b"> Jerusalem</label>
+        <label class="opt-lbl"><input type="radio" name="s1q1" value="c"> Bethlehem</label>
+        <label class="opt-lbl"><input type="radio" name="s1q1" value="d"> Jericho</label>
+      </div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">2. In welcher Stadt wuchs Jesus auf?</div>
+      <div class="options">
+        <label class="opt-lbl"><input type="radio" name="s1q2" value="a"> Bethlehem</label>
+        <label class="opt-lbl"><input type="radio" name="s1q2" value="b"> Jerusalem</label>
+        <label class="opt-lbl"><input type="radio" name="s1q2" value="c"> Kafarnaum</label>
+        <label class="opt-lbl"><input type="radio" name="s1q2" value="d"> Nazareth</label>
+      </div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">3. Von wem wurde Jesus im Fluss Jordan getauft?</div>
+      <div class="options">
+        <label class="opt-lbl"><input type="radio" name="s1q3" value="a"> Von Pontius Pilatus</label>
+        <label class="opt-lbl"><input type="radio" name="s1q3" value="b"> Von Petrus</label>
+        <label class="opt-lbl"><input type="radio" name="s1q3" value="c"> Von Johannes dem Täufer</label>
+        <label class="opt-lbl"><input type="radio" name="s1q3" value="d"> Von Moses</label>
+      </div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">4. Als was arbeitete Jesu Vater Josef?</div>
+      <div class="options">
+        <label class="opt-lbl"><input type="radio" name="s1q4" value="a"> Fischer</label>
+        <label class="opt-lbl"><input type="radio" name="s1q4" value="b"> Zimmermann</label>
+        <label class="opt-lbl"><input type="radio" name="s1q4" value="c"> Priester</label>
+        <label class="opt-lbl"><input type="radio" name="s1q4" value="d"> Händler</label>
+      </div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">5. Als was wurde Jesus bekannt, als er durch das Land reiste?</div>
+      <div class="options">
+        <label class="opt-lbl"><input type="radio" name="s1q5" value="a"> Statthalter</label>
+        <label class="opt-lbl"><input type="radio" name="s1q5" value="b"> Feldherr</label>
+        <label class="opt-lbl"><input type="radio" name="s1q5" value="c"> Wanderprediger</label>
+        <label class="opt-lbl"><input type="radio" name="s1q5" value="d"> Kaufmann</label>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="checkS1()">🔓 Schloss öffnen</button>
+    <button class="hint-btn" onclick="toggleHint('h1')">💡 Tipp anzeigen</button>
+    <div class="hint-box" id="h1">Denke an unsere erste Unterrichtsstunde: Wir haben eine Mind-Map zu Jesus erstellt. Bethlehem → Nazareth → Wanderprediger!</div>
+    <div class="feedback" id="fb1"></div>
+
+    <div class="ab-panel" id="abp1">
+      <div class="ab-panel-title">✅ Gut gemacht! Jetzt kommt das Arbeitsblatt!</div>
+      <div class="ab-panel-text">Nimm <strong>Arbeitsblatt 1</strong> vom Tisch und bearbeite es vollständig.<br>Berechne am Ende deinen 3-stelligen Code und gib ihn hier ein:</div>
+      <div class="ab-code-row">
+        <input class="ab-code-input" type="number" id="abc1" placeholder="_ _ _" maxlength="3">
+        <button class="ab-check-btn" onclick="checkABCode(1)">Code prüfen →</button>
+      </div>
+      <div class="feedback" id="abfb1" style="margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- STATION 2: Das Leben in Palästina -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="station" id="s2">
+  <div class="shead">
+    <div class="sicon">🏺</div>
+    <div class="stitle-group">
+      <div class="snum">Rätsel 2 von 6</div>
+      <div class="stitle">Das Leben in Palästina zu Jesu Lebzeiten</div>
+    </div>
+    <div class="solved-badge">✅</div>
+  </div>
+  <div class="sbody">
+    <div class="intro-note">
+      Palästina zur Zeit Jesu war eine Gesellschaft mit großen Unterschieden.
+      Ordne jeder Personengruppe die passende Beschreibung zu!
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">Verbinde jede Gruppe mit der richtigen Beschreibung:</div>
+
+      <div class="match-row">
+        <div class="match-left">🌾 Bauern</div>
+        <select class="match-sel" id="m1">
+          <option value="">– Beschreibung wählen –</option>
+          <option value="1">Besatzungsmacht; regierten Palästina mit harter Hand und verlangten Steuern</option>
+          <option value="2">Bewirtschafteten das Land, zahlten hohe Steuern und lebten oft in großer Armut</option>
+          <option value="3">Trieben Steuern für die Römer ein; galten beim eigenen Volk als Verräter</option>
+          <option value="4">Besaßen viel Land, beschäftigten Tagelöhner und lebten in Wohlstand</option>
+          <option value="5">Wurden ausgegrenzt, durften nicht am öffentlichen Leben teilnehmen, galten als Sünder</option>
+        </select>
+      </div>
+      <div class="match-row">
+        <div class="match-left">⚔️ Römer</div>
+        <select class="match-sel" id="m2">
+          <option value="">– Beschreibung wählen –</option>
+          <option value="1">Besatzungsmacht; regierten Palästina mit harter Hand und verlangten Steuern</option>
+          <option value="2">Bewirtschafteten das Land, zahlten hohe Steuern und lebten oft in großer Armut</option>
+          <option value="3">Trieben Steuern für die Römer ein; galten beim eigenen Volk als Verräter</option>
+          <option value="4">Besaßen viel Land, beschäftigten Tagelöhner und lebten in Wohlstand</option>
+          <option value="5">Wurden ausgegrenzt, durften nicht am öffentlichen Leben teilnehmen, galten als Sünder</option>
+        </select>
+      </div>
+      <div class="match-row">
+        <div class="match-left">💰 Zöllner</div>
+        <select class="match-sel" id="m3">
+          <option value="">– Beschreibung wählen –</option>
+          <option value="1">Besatzungsmacht; regierten Palästina mit harter Hand und verlangten Steuern</option>
+          <option value="2">Bewirtschafteten das Land, zahlten hohe Steuern und lebten oft in großer Armut</option>
+          <option value="3">Trieben Steuern für die Römer ein; galten beim eigenen Volk als Verräter</option>
+          <option value="4">Besaßen viel Land, beschäftigten Tagelöhner und lebten in Wohlstand</option>
+          <option value="5">Wurden ausgegrenzt, durften nicht am öffentlichen Leben teilnehmen, galten als Sünder</option>
+        </select>
+      </div>
+      <div class="match-row">
+        <div class="match-left">🏰 Großgrundbesitzer</div>
+        <select class="match-sel" id="m4">
+          <option value="">– Beschreibung wählen –</option>
+          <option value="1">Besatzungsmacht; regierten Palästina mit harter Hand und verlangten Steuern</option>
+          <option value="2">Bewirtschafteten das Land, zahlten hohe Steuern und lebten oft in großer Armut</option>
+          <option value="3">Trieben Steuern für die Römer ein; galten beim eigenen Volk als Verräter</option>
+          <option value="4">Besaßen viel Land, beschäftigten Tagelöhner und lebten in Wohlstand</option>
+          <option value="5">Wurden ausgegrenzt, durften nicht am öffentlichen Leben teilnehmen, galten als Sünder</option>
+        </select>
+      </div>
+      <div class="match-row">
+        <div class="match-left">🤒 Kranke</div>
+        <select class="match-sel" id="m5">
+          <option value="">– Beschreibung wählen –</option>
+          <option value="1">Besatzungsmacht; regierten Palästina mit harter Hand und verlangten Steuern</option>
+          <option value="2">Bewirtschafteten das Land, zahlten hohe Steuern und lebten oft in großer Armut</option>
+          <option value="3">Trieben Steuern für die Römer ein; galten beim eigenen Volk als Verräter</option>
+          <option value="4">Besaßen viel Land, beschäftigten Tagelöhner und lebten in Wohlstand</option>
+          <option value="5">Wurden ausgegrenzt, durften nicht am öffentlichen Leben teilnehmen, galten als Sünder</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="checkS2()">🔓 Schloss öffnen</button>
+    <button class="hint-btn" onclick="toggleHint('h2')">💡 Tipp anzeigen</button>
+    <div class="hint-box" id="h2">Erinnere dich an das Arbeitsblatt "Das Leben in Palästina zu Jesu Lebzeiten". Wer hatte Macht? Wer hatte kein Geld? Wer wurde ausgegrenzt?</div>
+    <div class="feedback" id="fb2"></div>
+
+    <div class="ab-panel" id="abp2">
+      <div class="ab-panel-title">✅ Gut gemacht! Jetzt kommt das Arbeitsblatt!</div>
+      <div class="ab-panel-text">Nimm <strong>Arbeitsblatt 2</strong> vom Tisch und bearbeite es vollständig.<br>Berechne am Ende deinen 3-stelligen Code und gib ihn hier ein:</div>
+      <div class="ab-code-row">
+        <input class="ab-code-input" type="number" id="abc2" placeholder="_ _ _" maxlength="3">
+        <button class="ab-check-btn" onclick="checkABCode(2)">Code prüfen →</button>
+      </div>
+      <div class="feedback" id="abfb2" style="margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- STATION 3: Jüdische Gruppierungen -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="station" id="s3">
+  <div class="shead">
+    <div class="sicon">✡️</div>
+    <div class="stitle-group">
+      <div class="snum">Rätsel 3 von 6</div>
+      <div class="stitle">Jüdische Gruppierungen zu Jesu Zeit</div>
+    </div>
+    <div class="solved-badge">✅</div>
+  </div>
+  <div class="sbody">
+    <div class="intro-note">
+      Im Judentum gab es verschiedene Gruppen mit sehr unterschiedlichen Überzeugungen.
+      Ordne jeder Beschreibung die richtige Gruppierung zu!
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">1. „Sie zogen sich komplett aus der Gesellschaft zurück und lebten in der Wüste in kleinen Gemeinschaften. Sie lebten sehr streng und warteten auf das Ende der Welt."</div>
+      <div class="options">
+        <label class="opt-lbl"><input type="radio" name="s3q1" value="a"> Pharisäer</label>
+        <label class="opt-lbl"><input type="radio" name="s3q1" value="b"> Sadduzäer</label>
+        <label class="opt-lbl"><input type="radio" name="s3q1" value="c"> Essener</label>
+        <label class="opt-lbl"><input type="radio" name="s3q1" value="d"> Zeloten</label>
+      </div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">2. „Sie kontrollierten den Tempel in Jerusalem. Sie kooperierten mit den Römern und gehörten meist zur reichen Oberschicht."</div>
+      <div class="options">
+        <label class="opt-lbl"><input type="radio" name="s3q2" value="a"> Pharisäer</label>
+        <label class="opt-lbl"><input type="radio" name="s3q2" value="b"> Sadduzäer</label>
+        <label class="opt-lbl"><input type="radio" name="s3q2" value="c"> Essener</label>
+        <label class="opt-lbl"><input type="radio" name="s3q2" value="d"> Zeloten</label>
+      </div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">3. „Sie wollten die römische Besatzung mit Gewalt beenden. Sie kämpften für ein freies, jüdisches Israel."</div>
+      <div class="options">
+        <label class="opt-lbl"><input type="radio" name="s3q3" value="a"> Pharisäer</label>
+        <label class="opt-lbl"><input type="radio" name="s3q3" value="b"> Sadduzäer</label>
+        <label class="opt-lbl"><input type="radio" name="s3q3" value="c"> Essener</label>
+        <label class="opt-lbl"><input type="radio" name="s3q3" value="d"> Zeloten</label>
+      </div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">4. „Sie hielten sehr streng an allen Gesetzen der Thora fest. Sie hatten großen Einfluss beim einfachen Volk und galten als fromm und gesetzestreue Ausleger."</div>
+      <div class="options">
+        <label class="opt-lbl"><input type="radio" name="s3q4" value="a"> Pharisäer</label>
+        <label class="opt-lbl"><input type="radio" name="s3q4" value="b"> Sadduzäer</label>
+        <label class="opt-lbl"><input type="radio" name="s3q4" value="c"> Essener</label>
+        <label class="opt-lbl"><input type="radio" name="s3q4" value="d"> Zeloten</label>
+      </div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">5. Mit welcher Gruppe hätte sich Jesus nach Meinung vieler am wenigsten gut verstanden – und warum?</div>
+      <div class="options">
+        <label class="opt-lbl"><input type="radio" name="s3q5" value="a"> Den Zeloten – Jesus predigte Frieden, keine Gewalt</label>
+        <label class="opt-lbl"><input type="radio" name="s3q5" value="b"> Den Essenern – Jesus mied die Gesellschaft genauso</label>
+        <label class="opt-lbl"><input type="radio" name="s3q5" value="c"> Den Sadduzäern – weil Jesus nicht in Jerusalem war</label>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="checkS3()">🔓 Schloss öffnen</button>
+    <button class="hint-btn" onclick="toggleHint('h3')">💡 Tipp anzeigen</button>
+    <div class="hint-box" id="h3">Erinnere dich an die Tabelle: Essener → Wüste; Sadduzäer → Tempel &amp; Römer; Zeloten → Gewalt; Pharisäer → Thora &amp; Volk.</div>
+    <div class="feedback" id="fb3"></div>
+
+    <div class="ab-panel" id="abp3">
+      <div class="ab-panel-title">✅ Gut gemacht! Jetzt kommt das Arbeitsblatt!</div>
+      <div class="ab-panel-text">Nimm <strong>Arbeitsblatt 3</strong> vom Tisch und bearbeite es vollständig.<br>Berechne am Ende deinen 3-stelligen Code und gib ihn hier ein:</div>
+      <div class="ab-code-row">
+        <input class="ab-code-input" type="number" id="abc3" placeholder="_ _ _" maxlength="3">
+        <button class="ab-check-btn" onclick="checkABCode(3)">Code prüfen →</button>
+      </div>
+      <div class="feedback" id="abfb3" style="margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- STATION 4: Pax Romana & Schalom -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="station" id="s4">
+  <div class="shead">
+    <div class="sicon">🕊️</div>
+    <div class="stitle-group">
+      <div class="snum">Rätsel 4 von 6</div>
+      <div class="stitle">Pax Romana & Schalom – Was ist Frieden?</div>
+    </div>
+    <div class="solved-badge">✅</div>
+  </div>
+  <div class="sbody">
+    <div class="intro-note">
+      Im Römischen Reich herrschte die „Pax Romana" – der Römische Frieden.
+      Aber was ist Frieden wirklich? Im Judentum gibt es das Wort <em>Schalom</em>.
+      Entscheide bei jeder Aussage: <strong>Wahr</strong> oder <strong>Falsch</strong>?
+    </div>
+
+    <div class="qblock">
+      <div class="tf-row">
+        <div class="tf-statement">1. Die „Pax Romana" bedeutet Frieden, der durch militärische Stärke und Unterdrückung erzwungen wurde.</div>
+        <div class="tf-btns">
+          <button class="tfb" onclick="setTF('tf1','W',this)">W</button>
+          <button class="tfb" onclick="setTF('tf1','F',this)">F</button>
+          <input type="hidden" id="tf1" value="">
+        </div>
+      </div>
+      <div class="tf-row">
+        <div class="tf-statement">2. Das hebräische Wort „Schalom" bedeutet dasselbe wie „Pax Romana".</div>
+        <div class="tf-btns">
+          <button class="tfb" onclick="setTF('tf2','W',this)">W</button>
+          <button class="tfb" onclick="setTF('tf2','F',this)">F</button>
+          <input type="hidden" id="tf2" value="">
+        </div>
+      </div>
+      <div class="tf-row">
+        <div class="tf-statement">3. „Schalom" umfasst mehr als nur das Fehlen von Krieg – es bedeutet auch Gesundheit, Heil und Wohlfahrt für alle.</div>
+        <div class="tf-btns">
+          <button class="tfb" onclick="setTF('tf3','W',this)">W</button>
+          <button class="tfb" onclick="setTF('tf3','F',this)">F</button>
+          <input type="hidden" id="tf3" value="">
+        </div>
+      </div>
+      <div class="tf-row">
+        <div class="tf-statement">4. Die Römer brachten für alle Bewohner Palästinas – also auch für Bauern, Kranke und Zöllner – gleichermaßen Frieden und Gerechtigkeit.</div>
+        <div class="tf-btns">
+          <button class="tfb" onclick="setTF('tf4','W',this)">W</button>
+          <button class="tfb" onclick="setTF('tf4','F',this)">F</button>
+          <input type="hidden" id="tf4" value="">
+        </div>
+      </div>
+      <div class="tf-row">
+        <div class="tf-statement">5. „Schalom alechem" bedeutet auf Deutsch so viel wie: „Frieden sei mit euch / Friede für euch alle".</div>
+        <div class="tf-btns">
+          <button class="tfb" onclick="setTF('tf5','W',this)">W</button>
+          <button class="tfb" onclick="setTF('tf5','F',this)">F</button>
+          <input type="hidden" id="tf5" value="">
+        </div>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="checkS4()">🔓 Schloss öffnen</button>
+    <button class="hint-btn" onclick="toggleHint('h4')">💡 Tipp anzeigen</button>
+    <div class="hint-box" id="h4">Pax Romana = Friede durch Macht (nicht für alle). Schalom = umfassender Friede, Wohlsein für alle. Das ist der große Unterschied!</div>
+    <div class="feedback" id="fb4"></div>
+
+    <div class="ab-panel" id="abp4">
+      <div class="ab-panel-title">✅ Gut gemacht! Jetzt kommt das Arbeitsblatt!</div>
+      <div class="ab-panel-text">Nimm <strong>Arbeitsblatt 4</strong> vom Tisch und bearbeite es vollständig.<br>Berechne am Ende deinen 3-stelligen Code und gib ihn hier ein:</div>
+      <div class="ab-code-row">
+        <input class="ab-code-input" type="number" id="abc4" placeholder="_ _ _" maxlength="3">
+        <button class="ab-check-btn" onclick="checkABCode(4)">Code prüfen →</button>
+      </div>
+      <div class="feedback" id="abfb4" style="margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- STATION 5: Der Leidensweg – Chronologie -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="station" id="s5">
+  <div class="shead">
+    <div class="sicon">✝️</div>
+    <div class="stitle-group">
+      <div class="snum">Rätsel 5 von 6</div>
+      <div class="stitle">Der Leidensweg Jesu – Bringe die Ereignisse in die richtige Reihenfolge!</div>
+    </div>
+    <div class="solved-badge">✅</div>
+  </div>
+  <div class="sbody">
+    <div class="intro-note">
+      Jesu letzte Tage in Jerusalem nennt man den „Leidensweg" (lateinisch: <em>Via Dolorosa</em>).
+      Klicke die Ereignisse in der richtigen zeitlichen Reihenfolge an –
+      das erste Ereignis zuerst!
+    </div>
+
+    <div class="order-list" id="orderList">
+      <div class="oitem" id="oi_A" onclick="clickOrder('A')">
+        <div class="onum" id="on_A">?</div>
+        <span>🚪 Jesus wird im Garten Gethsemane verhaftet und festgenommen</span>
+      </div>
+      <div class="oitem" id="oi_B" onclick="clickOrder('B')">
+        <div class="onum" id="on_B">?</div>
+        <span>🍞 Das letzte Abendmahl: Jesus feiert das Passahmahl mit seinen Jüngern</span>
+      </div>
+      <div class="oitem" id="oi_C" onclick="clickOrder('C')">
+        <div class="onum" id="on_C">?</div>
+        <span>🫏 Jesus zieht auf einem Esel in Jerusalem ein – das Volk jubelt ihm zu</span>
+      </div>
+      <div class="oitem" id="oi_D" onclick="clickOrder('D')">
+        <div class="onum" id="on_D">?</div>
+        <span>🕊️ Frauen finden das leere Grab – Jesus ist auferstanden!</span>
+      </div>
+      <div class="oitem" id="oi_E" onclick="clickOrder('E')">
+        <div class="onum" id="on_E">?</div>
+        <span>⚖️ Verhör vor dem römischen Statthalter Pontius Pilatus – Verurteilung</span>
+      </div>
+      <div class="oitem" id="oi_F" onclick="clickOrder('F')">
+        <div class="onum" id="on_F">?</div>
+        <span>✝️ Jesus wird auf dem Hügel Golgatha vor den Toren Jerusalems gekreuzigt</span>
+      </div>
+    </div>
+    <span class="reset-link" onclick="resetOrder()">↺ Auswahl zurücksetzen</span>
+
+    <br>
+    <button class="check-btn" onclick="checkS5()">🔓 Schloss öffnen</button>
+    <button class="hint-btn" onclick="toggleHint('h5')">💡 Tipp anzeigen</button>
+    <div class="hint-box" id="h5">Denke an den Zeitstrahl: Einzug → Abendmahl → Gethsemane → Pilatus → Kreuzigung → Auferstehung.</div>
+    <div class="feedback" id="fb5"></div>
+
+    <div class="ab-panel" id="abp5">
+      <div class="ab-panel-title">✅ Gut gemacht! Jetzt kommt das Arbeitsblatt!</div>
+      <div class="ab-panel-text">Nimm <strong>Arbeitsblatt 5</strong> vom Tisch und bearbeite es vollständig.<br>Berechne am Ende deinen 3-stelligen Code und gib ihn hier ein:</div>
+      <div class="ab-code-row">
+        <input class="ab-code-input" type="number" id="abc5" placeholder="_ _ _" maxlength="3">
+        <button class="ab-check-btn" onclick="checkABCode(5)">Code prüfen →</button>
+      </div>
+      <div class="feedback" id="abfb5" style="margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- STATION 6: Finales Wissenscheck -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="station" id="s6">
+  <div class="shead">
+    <div class="sicon">🔐</div>
+    <div class="stitle-group">
+      <div class="snum">Rätsel 6 von 6 – Das finale Schloss!</div>
+      <div class="stitle">Der große Jahres-Wissenscheck</div>
+    </div>
+    <div class="solved-badge">✅</div>
+  </div>
+  <div class="sbody">
+    <div class="intro-note">
+      Nur noch ein Schloss! Beweise, dass du das gesamte Schuljahr im Kopf hast.
+      Beantworte alle Fragen richtig – dann öffnet sich die Schatztruhe!
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">1. Wie viele Jünger hatte Jesus?</div>
+      <input class="tinput" type="number" id="s6q1" placeholder="Deine Antwort...">
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">2. Wo lehrte der zwölfjährige Jesus seine Eltern in Erstaunen?</div>
+      <div class="options">
+        <label class="opt-lbl"><input type="radio" name="s6q2" value="a"> Am See Genezareth</label>
+        <label class="opt-lbl"><input type="radio" name="s6q2" value="b"> Im Tempel in Jerusalem</label>
+        <label class="opt-lbl"><input type="radio" name="s6q2" value="c"> In der Wüste Judäa</label>
+        <label class="opt-lbl"><input type="radio" name="s6q2" value="d"> In Nazareth auf dem Marktplatz</label>
+      </div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">3. Was bedeutet der Begriff „Messias"?</div>
+      <div class="options">
+        <label class="opt-lbl"><input type="radio" name="s6q3" value="a"> Der Gekreuzigte</label>
+        <label class="opt-lbl"><input type="radio" name="s6q3" value="b"> Der Gesalbte – der von Gott gesandte Retter</label>
+        <label class="opt-lbl"><input type="radio" name="s6q3" value="c"> Der Prophet aus Nazareth</label>
+        <label class="opt-lbl"><input type="radio" name="s6q3" value="d"> Der König von Jerusalem</label>
+      </div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">4. Wo wurde Jesus nach dem Abendmahl verhaftet?</div>
+      <div class="options">
+        <label class="opt-lbl"><input type="radio" name="s6q4" value="a"> Im Tempel in Jerusalem</label>
+        <label class="opt-lbl"><input type="radio" name="s6q4" value="b"> Am See Genezareth</label>
+        <label class="opt-lbl"><input type="radio" name="s6q4" value="c"> Im Garten Gethsemane</label>
+        <label class="opt-lbl"><input type="radio" name="s6q4" value="d"> In Nazareth</label>
+      </div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">5. Was fanden die Frauen am dritten Tag nach der Kreuzigung, als sie zum Grab Jesu kamen?</div>
+      <div class="options">
+        <label class="opt-lbl"><input type="radio" name="s6q5" value="a"> Jesus betete noch am Grab</label>
+        <label class="opt-lbl"><input type="radio" name="s6q5" value="b"> Das Grab war noch verschlossen</label>
+        <label class="opt-lbl"><input type="radio" name="s6q5" value="c"> Das leere Grab – der Stein war weggerollt</label>
+        <label class="opt-lbl"><input type="radio" name="s6q5" value="d"> Römische Soldaten bewachten das Grab</label>
+      </div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtext">6. Was ist der entscheidende Unterschied zwischen der „Pax Romana" und dem jüdischen „Schalom"?</div>
+      <div class="options">
+        <label class="opt-lbl"><input type="radio" name="s6q6" value="a"> Pax Romana ist auf Latein, Schalom auf Griechisch</label>
+        <label class="opt-lbl"><input type="radio" name="s6q6" value="b"> Pax Romana meint militärisch erzwungenen Frieden für die Mächtigen; Schalom meint umfassendes Heil, Wohlsein und Frieden für alle Menschen</label>
+        <label class="opt-lbl"><input type="radio" name="s6q6" value="c"> Es gibt keinen Unterschied – beide bedeuten dasselbe</label>
+        <label class="opt-lbl"><input type="radio" name="s6q6" value="d"> Pax Romana kommt aus der Bibel, Schalom vom Kaiser</label>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="checkS6()">🔓 Finales Schloss öffnen!</button>
+    <button class="hint-btn" onclick="toggleHint('h6')">💡 Tipp anzeigen</button>
+    <div class="hint-box" id="h6">12 Jünger · Tempel in Jerusalem · Messias = Der Gesalbte · Gethsemane · Leeres Grab · Schalom = umfassender Frieden für alle</div>
+    <div class="feedback" id="fb6"></div>
+
+    <div class="ab-panel" id="abp6">
+      <div class="ab-panel-title">✅ Fast geschafft! Das letzte Arbeitsblatt wartet!</div>
+      <div class="ab-panel-text">Nimm <strong>Arbeitsblatt 6</strong> – das große Jahresfinale – und bearbeite es.<br>Dein letzter Code öffnet die Schatztruhe:</div>
+      <div class="ab-code-row">
+        <input class="ab-code-input" type="number" id="abc6" placeholder="_ _ _" maxlength="3">
+        <button class="ab-check-btn" onclick="checkABCode(6)">🏆 Schatztruhe öffnen!</button>
+      </div>
+      <div class="feedback" id="abfb6" style="margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- FINALE -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="finale" id="finale">
+  <div class="finale-icon">🏆</div>
+  <div class="finale-title">Die Truhe ist offen!</div>
+  <div class="stars">⭐⭐⭐⭐⭐⭐</div>
+  <div class="finale-text">
+    <strong>Herzlichen Glückwunsch!</strong> Du hast alle 6 Schlösser geknackt und
+    die Schatztruhe geöffnet! Du bist ein echter Experte für das Leben und die Zeit Jesu von Nazareth.
+  </div>
+  <div class="finale-summary">
+    <h3>📜 Das hast du heute bewiesen:</h3>
+    ✔ Du weißt, wer Jesus war – von Bethlehem über Nazareth bis zum Wanderprediger<br>
+    ✔ Du kennst das Leben der Menschen in Palästina zur Zeit Jesu<br>
+    ✔ Du kannst die vier jüdischen Gruppierungen unterscheiden<br>
+    ✔ Du verstehst den Unterschied zwischen Pax Romana und Schalom<br>
+    ✔ Du kennst den Leidensweg Jesu in der richtigen Reihenfolge<br>
+    ✔ Du hast alle Schlüsselbegriffe des Schuljahres sicher im Kopf
+  </div>
+  <div class="finale-text" style="font-style:italic; margin-top:12px;">
+    „Frieden sei mit euch." – <em>Schalom alechem</em>
+  </div>
+</div>
+
+<!-- LEHRER-BEREICH -->
+<div class="lehrer-wrap">
+  <button class="lehrer-toggle" onclick="toggleLehrer()">🔑 Lehrkraft: Lösungen &amp; Hinweise anzeigen</button>
+  <div class="lehrer-content" id="lehrerContent">
+    <table class="ltable">
+      <tr><th>Station</th><th>Richtige Antworten</th></tr>
+      <tr><td><strong>1 – Wer war Jesus?</strong></td><td>Bethlehem · Nazareth · Johannes dem Täufer · Zimmermann · Wanderprediger</td></tr>
+      <tr><td><strong>2 – Leben in Palästina</strong></td><td>Bauern→2 · Römer→1 · Zöllner→3 · Großgrundbesitzer→4 · Kranke→5</td></tr>
+      <tr><td><strong>3 – Jüdische Gruppen</strong></td><td>1→Essener · 2→Sadduzäer · 3→Zeloten · 4→Pharisäer · 5→Zeloten (Frieden, keine Gewalt)</td></tr>
+      <tr><td><strong>4 – Pax Romana/Schalom</strong></td><td>1→W · 2→F · 3→W · 4→F · 5→W</td></tr>
+      <tr><td><strong>5 – Leidensweg</strong></td><td>Richtige Reihenfolge: C→B→A→E→F→D (Einzug→Abendmahl→Gethsemane→Pilatus→Kreuzigung→Auferstehung)</td></tr>
+      <tr><td><strong>6 – Wissenscheck</strong></td><td>12 · Tempel in Jerusalem · Der Gesalbte (Retter) · Garten Gethsemane · Leeres Grab · Pax=Macht/Schalom=Heil für alle</td></tr>
+    </table>
+  </div>
+</div>
+
+</div><!-- /#app -->
+
+<script>
+// ── STATE ──
+let solved = [false,false,false,false,false,false];
+let orderSeq = []; // Für Station 5
+
+// ── PROGRESS ──
+function updateProgress() {
+  const count = solved.filter(Boolean).length;
+  const pct = Math.round(count / 6 * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  for (let i = 0; i < 6; i++) {
+    const dot = document.getElementById('dot' + i);
+    if (solved[i]) { dot.className = 'sdot done'; dot.textContent = '✓'; }
+    else if (i === 0 || solved[i-1]) { dot.className = 'sdot active'; }
+  }
+  const trophy = document.getElementById('dot6');
+  if (count === 6) { trophy.className = 'sdot done'; }
+}
+
+// Show AB panel after quick questions solved
+function showABPanel(n) {
+  const panel = document.getElementById('abp'+n);
+  if (panel) {
+    panel.style.display = 'block';
+    setTimeout(() => panel.scrollIntoView({behavior:'smooth', block:'nearest'}), 200);
+  }
+}
+
+// AB codes: index 1-6
+const AB_CODES = { 1:243, 2:315, 3:174, 4:396, 5:528, 6:741 };
+
+function checkABCode(n) {
+  const val = parseInt(document.getElementById('abc'+n).value);
+  const fb = document.getElementById('abfb'+n);
+  if (val === AB_CODES[n]) {
+    fb.className = 'feedback ok';
+    fb.textContent = '🎉 Richtiger Code! Weiter geht\'s …';
+    setTimeout(() => unlockNext(n), 700);
+  } else {
+    fb.className = 'feedback err';
+    fb.textContent = '❌ Falscher Code – schau noch einmal auf dein Arbeitsblatt!';
+  }
+}
+
+function unlockNext(n) {
+  solved[n-1] = true;
+  document.getElementById('s'+n).classList.add('solved');
+  if (n < 6) {
+    const next = document.getElementById('s'+(n+1));
+    next.classList.add('visible');
+    setTimeout(() => next.scrollIntoView({behavior:'smooth', block:'start'}), 300);
+  } else {
+    const finale = document.getElementById('finale');
+    finale.classList.add('visible');
+    setTimeout(() => finale.scrollIntoView({behavior:'smooth', block:'start'}), 300);
+  }
+  updateProgress();
+}
+
+function showFeedback(id, msg, isOk) {
+  const el = document.getElementById(id);
+  el.className = 'feedback ' + (isOk ? 'ok' : 'err');
+  el.textContent = msg;
+}
+
+function toggleHint(id) {
+  const h = document.getElementById(id);
+  h.style.display = h.style.display === 'block' ? 'none' : 'block';
+}
+
+function toggleLehrer() {
+  const c = document.getElementById('lehrerContent');
+  c.style.display = c.style.display === 'block' ? 'none' : 'block';
+}
+
+// ── TRUE/FALSE ──
+function setTF(id, val, btn) {
+  document.getElementById(id).value = val;
+  const parent = btn.closest('.tf-btns');
+  parent.querySelectorAll('.tfb').forEach(b => b.className = 'tfb');
+  btn.className = 'tfb ' + (val === 'W' ? 'sel-w' : 'sel-f');
+}
+
+// ── ORDER (Station 5) ──
+function clickOrder(key) {
+  const item = document.getElementById('oi_' + key);
+  if (item.classList.contains('numbered')) {
+    // Deselect not allowed once part of sequence, use reset
+    return;
+  }
+  const nextNum = orderSeq.length + 1;
+  orderSeq.push(key);
+  item.classList.add('numbered');
+  document.getElementById('on_' + key).textContent = nextNum;
+}
+
+function resetOrder() {
+  orderSeq = [];
+  ['A','B','C','D','E','F'].forEach(k => {
+    document.getElementById('oi_' + k).classList.remove('numbered');
+    document.getElementById('on_' + k).textContent = '?';
+  });
+  document.getElementById('fb5').className = 'feedback';
+}
+
+// ── CHECK FUNCTIONS ──
+
+function checkS1() {
+  const q1 = document.querySelector('input[name="s1q1"]:checked')?.value === 'c'; // Bethlehem
+  const q2 = document.querySelector('input[name="s1q2"]:checked')?.value === 'd'; // Nazareth
+  const q3 = document.querySelector('input[name="s1q3"]:checked')?.value === 'c'; // Johannes
+  const q4 = document.querySelector('input[name="s1q4"]:checked')?.value === 'b'; // Zimmermann
+  const q5 = document.querySelector('input[name="s1q5"]:checked')?.value === 'c'; // Wanderprediger
+  const wrong = [!q1&&'Frage 1',!q2&&'Frage 2',!q3&&'Frage 3',!q4&&'Frage 4',!q5&&'Frage 5'].filter(Boolean);
+  if (wrong.length === 0) {
+    showFeedback('fb1','✅ Richtig! Jetzt bearbeite Arbeitsblatt 1 und finde den Code!', true);
+    setTimeout(()=>showABPanel(1), 600);
+  } else {
+    showFeedback('fb1','❌ Noch nicht ganz richtig. Überprüfe: ' + wrong.join(', '), false);
+  }
+}
+
+function checkS2() {
+  const correct = { m1:'2', m2:'1', m3:'3', m4:'4', m5:'5' };
+  const wrong = [];
+  const names = { m1:'Bauern', m2:'Römer', m3:'Zöllner', m4:'Großgrundbesitzer', m5:'Kranke' };
+  for (const [k, v] of Object.entries(correct)) {
+    if (document.getElementById(k).value !== v) wrong.push(names[k]);
+  }
+  if (wrong.length === 0) {
+    showFeedback('fb2','✅ Richtig! Jetzt bearbeite Arbeitsblatt 2 und finde den Code!', true);
+    setTimeout(()=>showABPanel(2), 600);
+  } else {
+    showFeedback('fb2','❌ Noch nicht ganz: ' + wrong.join(', ') + ' stimmen nicht. Versuch es nochmal!', false);
+  }
+}
+
+function checkS3() {
+  const q1 = document.querySelector('input[name="s3q1"]:checked')?.value === 'c'; // Essener
+  const q2 = document.querySelector('input[name="s3q2"]:checked')?.value === 'b'; // Sadduzäer
+  const q3 = document.querySelector('input[name="s3q3"]:checked')?.value === 'd'; // Zeloten
+  const q4 = document.querySelector('input[name="s3q4"]:checked')?.value === 'a'; // Pharisäer
+  const q5 = document.querySelector('input[name="s3q5"]:checked')?.value === 'a'; // Zeloten - Gewalt
+  const wrong = [!q1&&'Frage 1',!q2&&'Frage 2',!q3&&'Frage 3',!q4&&'Frage 4',!q5&&'Frage 5'].filter(Boolean);
+  if (wrong.length === 0) {
+    showFeedback('fb3','✅ Richtig! Jetzt bearbeite Arbeitsblatt 3 und finde den Code!', true);
+    setTimeout(()=>showABPanel(3), 600);
+  } else {
+    showFeedback('fb3','❌ Noch nicht richtig: ' + wrong.join(', ') + '. Lies die Beschreibungen nochmal genau.', false);
+  }
+}
+
+function checkS4() {
+  const answers = { tf1:'W', tf2:'F', tf3:'W', tf4:'F', tf5:'W' };
+  const wrong = [];
+  for (const [k,v] of Object.entries(answers)) {
+    if (document.getElementById(k).value !== v) wrong.push('Aussage '+k.slice(-1));
+  }
+  if (wrong.length === 0) {
+    showFeedback('fb4','✅ Richtig! Jetzt bearbeite Arbeitsblatt 4 und finde den Code!', true);
+    setTimeout(()=>showABPanel(4), 600);
+  } else {
+    showFeedback('fb4','❌ Noch nicht richtig: ' + wrong.join(', ') + '. Überlege nochmal!', false);
+  }
+}
+
+function checkS5() {
+  const correct = ['C','B','A','E','F','D']; // Einzug,Abendmahl,Gethsemane,Pilatus,Kreuzigung,Auferstehung
+  if (orderSeq.length < 6) {
+    showFeedback('fb5','❌ Klicke noch alle Ereignisse an! (' + orderSeq.length + '/6 ausgewählt)', false);
+    return;
+  }
+  const isCorrect = orderSeq.every((v,i) => v === correct[i]);
+  if (isCorrect) {
+    showFeedback('fb5','✅ Richtig! Jetzt bearbeite Arbeitsblatt 5 und finde den Code!', true);
+    setTimeout(()=>showABPanel(5), 600);
+  } else {
+    showFeedback('fb5','❌ Die Reihenfolge stimmt noch nicht. Setze die Auswahl zurück und versuche es nochmal!', false);
+  }
+}
+
+function checkS6() {
+  const q1 = document.getElementById('s6q1').value.trim() === '12';
+  const q2 = document.querySelector('input[name="s6q2"]:checked')?.value === 'b'; // Tempel Jerusalem
+  const q3 = document.querySelector('input[name="s6q3"]:checked')?.value === 'b'; // Gesalbter Retter
+  const q4 = document.querySelector('input[name="s6q4"]:checked')?.value === 'c'; // Gethsemane
+  const q5 = document.querySelector('input[name="s6q5"]:checked')?.value === 'c'; // Leeres Grab
+  const q6 = document.querySelector('input[name="s6q6"]:checked')?.value === 'b'; // Schalom = Heil für alle
+  const wrong = [!q1&&'Frage 1',!q2&&'Frage 2',!q3&&'Frage 3',!q4&&'Frage 4',!q5&&'Frage 5',!q6&&'Frage 6'].filter(Boolean);
+  if (wrong.length === 0) {
+    showFeedback('fb6','✅ Richtig! Das letzte Arbeitsblatt wartet – finde den Abschlusscode!', true);
+    setTimeout(()=>showABPanel(6), 600);
+  } else {
+    showFeedback('fb6','❌ Noch nicht ganz: ' + wrong.join(', ') + '. Du schaffst das!', false);
+  }
+}
+
+// Init
+updateProgress();
+</script>
+</body>
+</html>

@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Arbeitsblätter – Escape Room: Auf den Spuren Jesu</title>
+<style>
+/* ── ALLGEMEIN ── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Georgia', serif;
+  font-size: 11pt;
+  color: #1a1a1a;
+  background: white;
+}
+
+/* ── SEITEN-LAYOUT ── */
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto 20px;
+  padding: 16mm 18mm 14mm;
+  background: white;
+  position: relative;
+}
+
+@media print {
+  .page { margin: 0; page-break-after: always; box-shadow: none; }
+  .no-print { display: none !important; }
+  body { background: white; }
+}
+
+@media screen {
+  body { background: #ccc; }
+  .page { box-shadow: 0 2px 12px rgba(0,0,0,.3); }
+}
+
+/* ── KOPFZEILE JEDER SEITE ── */
+.ab-header {
+  border-bottom: 3px solid #2a1a0a;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.ab-badge {
+  background: #2a1a0a;
+  color: #c9a84c;
+  font-size: 8pt;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+  margin-top: 3px;
+}
+.ab-title-block { flex: 1; }
+.ab-icon { font-size: 22pt; line-height: 1; }
+.ab-title { font-size: 15pt; font-weight: bold; color: #2a1a0a; line-height: 1.15; }
+.ab-subtitle { font-size: 9pt; color: #555; margin-top: 2px; font-style: italic; }
+
+/* Name/Klasse-Zeile */
+.name-line {
+  display: flex; gap: 20px;
+  font-size: 9pt; margin-bottom: 14px; color: #333;
+}
+.name-line span { display: flex; align-items: center; gap: 6px; }
+.name-line .line { border-bottom: 1px solid #555; min-width: 130px; height: 16px; display: inline-block; }
+
+/* ── INFOKÄSTEN ── */
+.info-box {
+  background: #fdf8ee;
+  border: 1.5px solid #c9a84c;
+  border-left: 5px solid #c9a84c;
+  border-radius: 0 5px 5px 0;
+  padding: 9px 12px;
+  margin-bottom: 13px;
+  font-size: 9.5pt;
+  line-height: 1.55;
+}
+.info-box p + p { margin-top: 6px; }
+.info-box strong { color: #2a1a0a; }
+
+/* ── AUFGABEN ── */
+.task-block { margin-bottom: 13px; }
+.task-label {
+  font-weight: bold;
+  font-size: 10pt;
+  color: #2a1a0a;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+.task-num {
+  background: #2a1a0a;
+  color: #c9a84c;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  font-size: 8pt;
+  flex-shrink: 0;
+}
+
+/* Steckbrief */
+.steckbrief {
+  border: 1.5px solid #999;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.steckbrief-row {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+}
+.steckbrief-row:last-child { border-bottom: none; }
+.sk-label {
+  background: #f0e8d5;
+  font-weight: bold;
+  font-size: 9pt;
+  padding: 4px 8px;
+  width: 38%;
+  color: #2a1a0a;
+  border-right: 1px solid #ccc;
+}
+.sk-value {
+  padding: 4px 8px;
+  width: 62%;
+  font-size: 9pt;
+}
+
+/* Tabellen */
+.table {
+  width: 100%; border-collapse: collapse; font-size: 9pt; margin-top: 4px;
+}
+.table th {
+  background: #2a1a0a; color: #c9a84c;
+  padding: 5px 8px; text-align: left; font-size: 8.5pt;
+}
+.table td {
+  padding: 5px 8px; border: 1px solid #ccc;
+  min-height: 24px;
+}
+.table tr:nth-child(even) td { background: #fafaf6; }
+
+/* Sortier-Aufgabe */
+.sort-list { list-style: none; padding: 0; }
+.sort-list li {
+  display: flex; align-items: center; gap: 8px;
+  border: 1px solid #ccc; border-radius: 3px;
+  padding: 5px 8px; margin-bottom: 5px;
+  font-size: 9.5pt; background: #fafafa;
+}
+.sort-box {
+  width: 22px; height: 22px;
+  border: 2px solid #999; border-radius: 3px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 8pt; color: #555; flex-shrink: 0;
+  background: white;
+}
+
+/* ── RICHTIG/FALSCH-TABELLE ── */
+.rf-section {
+  margin-bottom: 12px;
+}
+.rf-intro {
+  font-size: 9pt; font-style: italic; color: #444;
+  margin-bottom: 7px;
+  background: #f5f0e8;
+  padding: 5px 8px;
+  border-radius: 3px;
+  border-left: 3px solid #8b6914;
+}
+.rf-table {
+  width: 100%; border-collapse: collapse; font-size: 9.5pt;
+}
+.rf-table thead th {
+  background: #3d2510; color: #f5e6c8;
+  padding: 5px 8px; text-align: center; font-size: 8.5pt;
+}
+.rf-table thead th:first-child { text-align: left; }
+.rf-table td {
+  border: 1px solid #ccc; padding: 5px 8px; vertical-align: middle;
+}
+.rf-table tr:nth-child(even) td { background: #fafaf6; }
+.rf-num { text-align: center; font-weight: bold; color: #555; font-size: 9pt; }
+.rf-stmt { font-size: 9.5pt; line-height: 1.35; }
+.rf-zahl { text-align: center; font-weight: bold; color: #8b6914; font-size: 9.5pt; }
+.rf-wf { text-align: center; font-size: 9pt; }
+.rf-wf .wf-box {
+  display: inline-block; width: 20px; height: 20px;
+  border: 1.5px solid #888; border-radius: 2px;
+  margin: 0 2px; vertical-align: middle;
+  text-align: center; line-height: 20px;
+  font-size: 8.5pt;
+}
+
+/* ── CODE-BOX ── */
+.code-box {
+  margin-top: 12px;
+  border: 2.5px solid #2a1a0a;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.code-header {
+  background: #2a1a0a;
+  color: #c9a84c;
+  font-size: 8.5pt;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+}
+.code-body {
+  padding: 9px 12px;
+  background: #fdf8ee;
+  font-size: 10pt;
+}
+.code-formula {
+  font-size: 9pt; color: #555; margin-bottom: 6px;
+  font-style: italic;
+}
+.code-entry {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.code-entry label { font-weight: bold; font-size: 10pt; }
+.code-blanks {
+  display: flex; gap: 4px;
+}
+.cblank {
+  width: 30px; height: 34px;
+  border: 2px solid #2a1a0a;
+  border-radius: 3px;
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16pt; font-weight: bold;
+}
+.code-hint { font-size: 8pt; color: #888; margin-top: 5px; }
+
+/* Trennlinie zwischen Aufgaben */
+hr.task-div { border: none; border-top: 1px dashed #ccc; margin: 10px 0; }
+
+/* ── DRUCKKNOPF (nur am Bildschirm) ── */
+.print-bar {
+  background: #2a1a0a;
+  color: #c9a84c;
+  text-align: center;
+  padding: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+}
+.print-bar button {
+  background: #c9a84c; color: #2a1a0a;
+  border: none; padding: 7px 22px;
+  border-radius: 4px; font-weight: bold;
+  font-size: 10pt; cursor: pointer; margin-left: 12px;
+}
+.print-bar button:hover { background: #e8c86a; }
+</style>
+</head>
+<body>
+
+<div class="print-bar no-print">
+  🖨️ Arbeitsblätter für den Escape Room: Auf den Spuren Jesu &nbsp;|&nbsp;
+  <button onclick="window.print()">Alle Seiten drucken</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- AB 1: Wer war Jesus? -->
+<!-- CODE: 243 -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="ab-header">
+    <div class="ab-icon">⭐</div>
+    <div class="ab-title-block">
+      <div class="ab-title">Rätsel 1 – Held oder Handwerker?</div>
+      <div class="ab-subtitle">Escape Room: Auf den Spuren Jesu &nbsp;·&nbsp; Jahrgang 6 Religion</div>
+    </div>
+    <div class="ab-badge">Arbeitsblatt 1</div>
+  </div>
+
+  <div class="name-line">
+    <span>Name: <span class="line"></span></span>
+    <span>Klasse: <span class="line" style="min-width:60px"></span></span>
+    <span>Datum: <span class="line" style="min-width:80px"></span></span>
+  </div>
+
+  <div class="info-box">
+    <p><strong>Jesus von Nazareth</strong> lebte im 1. Jahrhundert in Palästina. Er wurde um das Jahr 4 v. Chr. in der Stadt <strong>Bethlehem</strong> geboren. Aufgewachsen ist er jedoch in <strong>Nazareth</strong>, wo sein Vater <strong>Josef</strong> als Zimmermann arbeitete. Jesu Mutter heißt <strong>Maria</strong>.</p>
+    <p>Mit etwa 30 Jahren ließ Jesus sich von <strong>Johannes dem Täufer</strong> im Fluss Jordan taufen. Danach zog er als <strong>Wanderprediger</strong> durch das Land. Er rief die Menschen auf, ihr Leben zu ändern, heilte Kranke und trat für Arme ein. Er erzählte kurze Geschichten mit tiefer Botschaft – sogenannte <strong>Gleichnisse</strong>. Um sich scharte er <strong>12 Jünger</strong>, enge Vertraute, die ihn auf seinen Reisen begleiteten.</p>
+    <p>Held oder Handwerker? Jesus war beides – und noch viel mehr.</p>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">1</span> Fülle den Steckbrief über Jesus aus.</div>
+    <div class="steckbrief">
+      <div class="steckbrief-row"><div class="sk-label">📍 Geburtsort</div><div class="sk-value"></div></div>
+      <div class="steckbrief-row"><div class="sk-label">🏠 Aufwachsort</div><div class="sk-value"></div></div>
+      <div class="steckbrief-row"><div class="sk-label">👩 Name der Mutter</div><div class="sk-value"></div></div>
+      <div class="steckbrief-row"><div class="sk-label">🔨 Beruf des Vaters</div><div class="sk-value"></div></div>
+      <div class="steckbrief-row"><div class="sk-label">💧 Wer taufte Jesus?</div><div class="sk-value"></div></div>
+      <div class="steckbrief-row"><div class="sk-label">🚶 Womit wurde Jesus bekannt?</div><div class="sk-value"></div></div>
+      <div class="steckbrief-row"><div class="sk-label">👥 Anzahl seiner Jünger</div><div class="sk-value"></div></div>
+    </div>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">2</span> Meinungen über Jesus – was stimmt wirklich?</div>
+    <p style="font-size:9pt; margin-bottom:6px;">Damals erzählten sich die Menschen vieles über Jesus – aber nicht alles stimmte. Kreuze bei jeder Aussage <strong>W</strong> (Wahr) oder <strong>F</strong> (Falsch) an. Schreibe die Zahlen der <em>wahren</em> Aussagen auf und addiere sie.</p>
+
+    <div class="rf-section">
+      <table class="rf-table">
+        <thead>
+          <tr>
+            <th style="width:60%">Aussage</th>
+            <th style="width:10%">Zahl</th>
+            <th style="width:15%">W &nbsp; / &nbsp; F</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rf-stmt">A) Jesus wurde in <em>Bethlehem</em> geboren.</td>
+            <td class="rf-zahl">200</td>
+            <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+          </tr>
+          <tr>
+            <td class="rf-stmt">B) Jesu Vater Josef war von Beruf <em>Fischer</em>.</td>
+            <td class="rf-zahl">50</td>
+            <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+          </tr>
+          <tr>
+            <td class="rf-stmt">C) Jesus wurde von <em>Johannes dem Täufer</em> getauft.</td>
+            <td class="rf-zahl">40</td>
+            <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+          </tr>
+          <tr>
+            <td class="rf-stmt">D) Jesus hatte <em>7</em> Jünger um sich geschart.</td>
+            <td class="rf-zahl">61</td>
+            <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+          </tr>
+          <tr>
+            <td class="rf-stmt">E) Jesus wuchs in der Stadt <em>Jerusalem</em> auf.</td>
+            <td class="rf-zahl">85</td>
+            <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+          </tr>
+          <tr>
+            <td class="rf-stmt">F) Jesus zog als <em>Wanderprediger</em> durch Palästina.</td>
+            <td class="rf-zahl">3</td>
+            <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+          </tr>
+          <tr>
+            <td class="rf-stmt">G) Jesu Mutter heißt <em>Elisabeth</em>.</td>
+            <td class="rf-zahl">29</td>
+            <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="code-box">
+    <div class="code-header">🔐 Dein Code für Station 1</div>
+    <div class="code-body">
+      <div class="code-formula">Addiere nur die Zahlen der <strong>wahren</strong> Aussagen (W): _____ + _____ + _____ = ?</div>
+      <div class="code-entry">
+        <label>Mein Code:</label>
+        <div class="code-blanks">
+          <div class="cblank"></div>
+          <div class="cblank"></div>
+          <div class="cblank"></div>
+        </div>
+      </div>
+      <div class="code-hint">→ Gib diesen Code im digitalen Escape Room ein, um Schloss 1 endgültig zu öffnen!</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- AB 2: Das Leben in Palästina -->
+<!-- CODE: 315 -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="ab-header">
+    <div class="ab-icon">🏺</div>
+    <div class="ab-title-block">
+      <div class="ab-title">Rätsel 2 – Das Leben in Palästina zu Jesu Zeit</div>
+      <div class="ab-subtitle">Escape Room: Auf den Spuren Jesu &nbsp;·&nbsp; Jahrgang 6 Religion</div>
+    </div>
+    <div class="ab-badge">Arbeitsblatt 2</div>
+  </div>
+
+  <div class="name-line">
+    <span>Name: <span class="line"></span></span>
+    <span>Klasse: <span class="line" style="min-width:60px"></span></span>
+  </div>
+
+  <div class="info-box">
+    <p>Palästina zur Zeit Jesu war eine Gesellschaft mit <strong>großen Unterschieden</strong>. Die <strong>Römer</strong> hatten das Land besetzt und regierten mit harter Hand. Ihr Vertreter vor Ort war der <strong>Statthalter</strong>.</p>
+    <p>Die meisten Menschen arbeiteten als <strong>Bauern</strong> auf dem Feld – sie zahlten hohe Steuern und lebten oft in großer Armut. Besser gestellt waren die <strong>Großgrundbesitzer</strong>, die viel Land besaßen. Sie beschäftigten <strong>Tagelöhner</strong> – Menschen ohne eigenes Land.</p>
+    <p>Besonders verhasst waren die <strong>Zöllner</strong>: Sie trieben Steuern für die Römer ein und galten beim eigenen Volk als Verräter. Am schlimmsten erging es den <strong>Kranken</strong>: Sie wurden aus der Gesellschaft ausgeschlossen, weil Krankheit als Strafe Gottes galt.</p>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">1</span> Bewerte das Leben der verschiedenen Gruppen – trage sie in die Tabelle ein.</div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>😊😊 Sehr gut</th>
+          <th>😊 Gut</th>
+          <th>😟 Schlecht</th>
+          <th>😟😟 Sehr schlecht</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="height:45px; font-size:8pt; color:#aaa">Gruppen eintragen …</td>
+          <td style="height:45px"></td>
+          <td style="height:45px"></td>
+          <td style="height:45px"></td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:8.5pt; color:#555; margin-top:4px;"><em>Zur Auswahl: Bauern · Römer/Statthalter · Zöllner · Großgrundbesitzer · Kranke · Tagelöhner</em></p>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">2</span> Begründe eine deiner Einschätzungen in einem Satz.</div>
+    <p style="font-size:9pt; border: 1px solid #ccc; padding:6px; border-radius:3px; min-height:30px;"></p>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">3</span> Richtig oder Falsch? Kreuze an und addiere die Zahlen der <em>wahren</em> Aussagen.</div>
+    <table class="rf-table">
+      <thead>
+        <tr>
+          <th style="width:60%">Aussage</th>
+          <th style="width:10%">Zahl</th>
+          <th style="width:15%">W &nbsp; / &nbsp; F</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="rf-stmt">A) Zöllner galten beim Volk als Verräter, weil sie Steuern für die Römer einzogen.</td>
+          <td class="rf-zahl">300</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">B) Bauern lebten meist in großem Wohlstand und Reichtum.</td>
+          <td class="rf-zahl">47</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">C) Die Römer regierten Palästina als Besatzungsmacht.</td>
+          <td class="rf-zahl">10</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">D) Großgrundbesitzer gehörten zu den Ärmsten der Gesellschaft.</td>
+          <td class="rf-zahl">86</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">E) Kranke wurden ausgegrenzt und durften nicht am öffentlichen Leben teilnehmen.</td>
+          <td class="rf-zahl">5</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">F) Tagelöhner hatten ein sicheres Einkommen und feste Arbeitsstellen.</td>
+          <td class="rf-zahl">33</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="code-box">
+    <div class="code-header">🔐 Dein Code für Station 2</div>
+    <div class="code-body">
+      <div class="code-formula">Addiere nur die Zahlen der <strong>wahren</strong> Aussagen (W): _____ + _____ + _____ = ?</div>
+      <div class="code-entry">
+        <label>Mein Code:</label>
+        <div class="code-blanks">
+          <div class="cblank"></div>
+          <div class="cblank"></div>
+          <div class="cblank"></div>
+        </div>
+      </div>
+      <div class="code-hint">→ Gib diesen Code im digitalen Escape Room ein!</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- AB 3: Jüdische Gruppierungen -->
+<!-- CODE: 174 -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="ab-header">
+    <div class="ab-icon">✡️</div>
+    <div class="ab-title-block">
+      <div class="ab-title">Rätsel 3 – Jüdische Gruppierungen zu Jesu Zeit</div>
+      <div class="ab-subtitle">Escape Room: Auf den Spuren Jesu &nbsp;·&nbsp; Jahrgang 6 Religion</div>
+    </div>
+    <div class="ab-badge">Arbeitsblatt 3</div>
+  </div>
+
+  <div class="name-line">
+    <span>Name: <span class="line"></span></span>
+    <span>Klasse: <span class="line" style="min-width:60px"></span></span>
+  </div>
+
+  <div class="info-box">
+    <p>Im Judentum zu Jesu Zeit gab es vier wichtige Gruppen mit sehr unterschiedlichen Überzeugungen:</p>
+    <p>Die <strong>Pharisäer</strong> hielten streng an allen Gesetzen der Thora fest und hatten großen Einfluss beim einfachen Volk. Die <strong>Sadduzäer</strong> gehörten zur reichen Oberschicht, kontrollierten den Tempel in Jerusalem und arbeiteten mit den Römern zusammen. Die <strong>Zeloten</strong> lehnten die römische Besatzung entschieden ab und wollten sie mit <em>Gewalt</em> beenden. Die <strong>Essener</strong> schließlich zogen sich vollständig aus der Gesellschaft zurück und lebten in der Wüste in kleinen Gemeinschaften – sie warteten auf das Eingreifen Gottes.</p>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">1</span> Fülle die Vergleichstabelle aus. Nutze die Informationen aus dem Kasten oben.</div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width:20%">Gruppe</th>
+          <th style="width:30%">Verhältnis zur Thora</th>
+          <th style="width:30%">Verhältnis zu den Römern</th>
+          <th style="width:20%">Besonderheit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:bold">Pharisäer</td>
+          <td style="height:36px"></td><td></td><td></td>
+        </tr>
+        <tr>
+          <td style="font-weight:bold">Sadduzäer</td>
+          <td style="height:36px"></td><td></td><td></td>
+        </tr>
+        <tr>
+          <td style="font-weight:bold">Zeloten</td>
+          <td style="height:36px"></td><td></td><td></td>
+        </tr>
+        <tr>
+          <td style="font-weight:bold">Essener</td>
+          <td style="height:36px"></td><td></td><td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">2</span> Mit wem hätte sich Jesus wohl am wenigsten gut verstanden – und warum?</div>
+    <p style="font-size:9pt; border:1px solid #ccc; padding:6px; border-radius:3px; min-height:28px;"></p>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">3</span> Richtig oder Falsch? Addiere die Zahlen der <em>wahren</em> Aussagen.</div>
+    <table class="rf-table">
+      <thead>
+        <tr>
+          <th style="width:60%">Aussage</th>
+          <th style="width:10%">Zahl</th>
+          <th style="width:15%">W &nbsp; / &nbsp; F</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="rf-stmt">A) Die Essener zogen sich in die Wüste zurück und lebten dort in Gemeinschaft.</td>
+          <td class="rf-zahl">100</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">B) Die Sadduzäer lehnten jede Zusammenarbeit mit den Römern strikt ab.</td>
+          <td class="rf-zahl">45</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">C) Die Zeloten wollten die römische Besatzung mit Gewalt beenden.</td>
+          <td class="rf-zahl">70</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">D) Die Pharisäer hatten wenig Einfluss auf das einfache Volk.</td>
+          <td class="rf-zahl">88</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">E) Die Sadduzäer kontrollierten den Tempel in Jerusalem.</td>
+          <td class="rf-zahl">4</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">F) Die Essener lebten als Priester im Tempel in Jerusalem.</td>
+          <td class="rf-zahl">37</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="code-box">
+    <div class="code-header">🔐 Dein Code für Station 3</div>
+    <div class="code-body">
+      <div class="code-formula">Addiere nur die Zahlen der <strong>wahren</strong> Aussagen (W): _____ + _____ + _____ = ?</div>
+      <div class="code-entry">
+        <label>Mein Code:</label>
+        <div class="code-blanks">
+          <div class="cblank"></div>
+          <div class="cblank"></div>
+          <div class="cblank"></div>
+        </div>
+      </div>
+      <div class="code-hint">→ Gib diesen Code im digitalen Escape Room ein!</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- AB 4: Pax Romana & Schalom -->
+<!-- CODE: 396 -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="ab-header">
+    <div class="ab-icon">🕊️</div>
+    <div class="ab-title-block">
+      <div class="ab-title">Rätsel 4 – Pax Romana &amp; Schalom</div>
+      <div class="ab-subtitle">Escape Room: Auf den Spuren Jesu &nbsp;·&nbsp; Jahrgang 6 Religion</div>
+    </div>
+    <div class="ab-badge">Arbeitsblatt 4</div>
+  </div>
+
+  <div class="name-line">
+    <span>Name: <span class="line"></span></span>
+    <span>Klasse: <span class="line" style="min-width:60px"></span></span>
+  </div>
+
+  <div class="info-box">
+    <p>Als Jesus lebte, herrschte im Römischen Reich die sogenannte <strong>Pax Romana</strong> (lateinisch: „Römischer Frieden"). Die Römer hatten Kriege beendet und die Grenzen gesichert – das klingt gut. Doch für viele Menschen in Palästina bedeutete dieser Friede: Besatzung, Steuerdruck und Unterdrückung. Es war ein Friede, der durch <em>militärische Stärke</em> erzwungen wurde und vor allem den Mächtigen nutzte.</p>
+    <p>Das jüdische Wort <strong>Schalom</strong> (שָׁלוֹם) meint etwas ganz anderes: Nicht nur das Fehlen von Krieg, sondern <em>umfassendes Wohlsein</em> – Gesundheit, Heil, Gerechtigkeit und Frieden für <em>alle</em> Menschen. „Schalom alechem" bedeutet: „Friede sei mit euch!"</p>
+    <p>Der Unterschied: <strong>Pax Romana</strong> = Friede durch Macht &nbsp;|&nbsp; <strong>Schalom</strong> = Friede durch Gerechtigkeit und Fürsorge.</p>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">1</span> Vergleich: Fülle die Tabelle aus.</div>
+    <table class="table">
+      <thead>
+        <tr><th style="width:28%"></th><th>Pax Romana</th><th>Schalom</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="font-weight:bold">Sprache</td><td>Latein</td><td></td></tr>
+        <tr><td style="font-weight:bold">Bedeutung</td><td style="height:30px"></td><td style="height:30px"></td></tr>
+        <tr><td style="font-weight:bold">Grundlage</td><td></td><td></td></tr>
+        <tr><td style="font-weight:bold">Wer profitiert?</td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">2</span> Erkläre in eigenen Worten den wichtigsten Unterschied zwischen Pax Romana und Schalom.</div>
+    <p style="font-size:9pt; border:1px solid #ccc; padding:6px; border-radius:3px; min-height:30px;"></p>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">3</span> Richtig oder Falsch? Addiere die Zahlen der <em>wahren</em> Aussagen.</div>
+    <table class="rf-table">
+      <thead>
+        <tr>
+          <th style="width:60%">Aussage</th>
+          <th style="width:10%">Zahl</th>
+          <th style="width:15%">W &nbsp; / &nbsp; F</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="rf-stmt">A) Pax Romana bedeutet: Friede durch militärische Stärke und Machterhalt.</td>
+          <td class="rf-zahl">300</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">B) Schalom und Pax Romana meinen dasselbe – beide bedeuten einfach „Frieden".</td>
+          <td class="rf-zahl">55</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">C) Schalom umfasst Gesundheit, Heil und Wohlsein für alle Menschen.</td>
+          <td class="rf-zahl">90</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">D) Die Pax Romana brachte Gerechtigkeit und Wohlstand für alle Bevölkerungsgruppen in Palästina.</td>
+          <td class="rf-zahl">72</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">E) Das Wort Schalom stammt aus dem Hebräischen.</td>
+          <td class="rf-zahl">6</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">F) „Pax Romana" war der römische Begriff für Nächstenliebe.</td>
+          <td class="rf-zahl">48</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="code-box">
+    <div class="code-header">🔐 Dein Code für Station 4</div>
+    <div class="code-body">
+      <div class="code-formula">Addiere nur die Zahlen der <strong>wahren</strong> Aussagen (W): _____ + _____ + _____ = ?</div>
+      <div class="code-entry">
+        <label>Mein Code:</label>
+        <div class="code-blanks">
+          <div class="cblank"></div>
+          <div class="cblank"></div>
+          <div class="cblank"></div>
+        </div>
+      </div>
+      <div class="code-hint">→ Gib diesen Code im digitalen Escape Room ein!</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- AB 5: Der Leidensweg -->
+<!-- CODE: 528 -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="ab-header">
+    <div class="ab-icon">✝️</div>
+    <div class="ab-title-block">
+      <div class="ab-title">Rätsel 5 – Der Leidensweg Jesu</div>
+      <div class="ab-subtitle">Escape Room: Auf den Spuren Jesu &nbsp;·&nbsp; Jahrgang 6 Religion</div>
+    </div>
+    <div class="ab-badge">Arbeitsblatt 5</div>
+  </div>
+
+  <div class="name-line">
+    <span>Name: <span class="line"></span></span>
+    <span>Klasse: <span class="line" style="min-width:60px"></span></span>
+  </div>
+
+  <div class="info-box">
+    <p>Die letzten Tage im Leben Jesu spielten sich in <strong>Jerusalem</strong> ab. Man nennt diese Zeit den <strong>Leidensweg</strong> (lateinisch: <em>Via Dolorosa</em>).</p>
+    <p>Jesus zog auf einem <strong>Esel</strong> in Jerusalem ein – einem Symbol der Bescheidenheit. Das Volk jubelte ihm zu. Danach feierte er mit seinen 12 Jüngern das <strong>Passahmahl</strong> (das Letzte Abendmahl), bei dem er Brot brach und Wein trank. In der Nacht wurde Jesus im <strong>Garten Gethsemane</strong> verhaftet. Er wurde zum römischen Statthalter <strong>Pontius Pilatus</strong> gebracht, der ihn verhörte und zum Tod verurteilte. Jesus wurde auf dem Hügel <strong>Golgatha</strong> gekreuzigt.</p>
+    <p>Am <strong>dritten Tag</strong> fanden Frauen das Grab leer vor – der Stein war weggerollt. Für Christen ist dies das Zeichen der <strong>Auferstehung</strong>: Jesus lebt!</p>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">1</span> Bringe die Ereignisse in die richtige Reihenfolge. Schreibe die Zahlen 1–6 in die Kästchen.</div>
+    <ul class="sort-list">
+      <li><span class="sort-box"></span> Frauen finden das leere Grab – Auferstehung!</li>
+      <li><span class="sort-box"></span> Das letzte Abendmahl – Jesus feiert Passah mit seinen Jüngern</li>
+      <li><span class="sort-box"></span> Verhör durch Pontius Pilatus – Jesus wird zum Tod verurteilt</li>
+      <li><span class="sort-box"></span> Jesus zieht auf einem Esel in Jerusalem ein</li>
+      <li><span class="sort-box"></span> Kreuzigung auf dem Hügel Golgatha</li>
+      <li><span class="sort-box"></span> Verhaftung im Garten Gethsemane</li>
+    </ul>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">2</span> Erkläre: Was bedeutet die Auferstehung für Christen?</div>
+    <p style="font-size:9pt; border:1px solid #ccc; padding:6px; border-radius:3px; min-height:28px;"></p>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">3</span> Richtig oder Falsch? Kreuze an und addiere die Zahlen der <em>wahren</em> Aussagen.</div>
+    <table class="rf-table">
+      <thead>
+        <tr>
+          <th style="width:60%">Aussage</th>
+          <th style="width:10%">Zahl</th>
+          <th style="width:15%">W &nbsp; / &nbsp; F</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="rf-stmt">A) Jesus zog auf einem weißen Pferd triumphierend in Jerusalem ein.</td>
+          <td class="rf-zahl">43</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">B) Das letzte Abendmahl fand im Garten Gethsemane statt.</td>
+          <td class="rf-zahl">17</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">C) Jesus wurde im Garten Gethsemane verhaftet und festgenommen.</td>
+          <td class="rf-zahl">500</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">D) Pontius Pilatus – der römische Statthalter – verurteilte Jesus zum Tod.</td>
+          <td class="rf-zahl">20</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">E) Jesus wurde in seiner Heimatstadt Bethlehem gekreuzigt.</td>
+          <td class="rf-zahl">61</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">F) Frauen fanden am dritten Tag nach der Kreuzigung das leere Grab Jesu.</td>
+          <td class="rf-zahl">2</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="code-box">
+    <div class="code-header">🔐 Dein Code für Station 5 – kombiniere Aufgabe 1 und Aufgabe 3!</div>
+    <div class="code-body">
+      <div class="code-formula" style="margin-bottom:10px;">
+        Fülle die Rechnung Schritt für Schritt aus:
+      </div>
+
+      <table style="width:100%; border-collapse:collapse; font-size:9.5pt; margin-bottom:8px;">
+        <tr style="background:rgba(201,168,76,0.12);">
+          <td style="padding:5px 8px; width:8%; font-weight:bold; color:#8b6914; font-size:8.5pt;">①</td>
+          <td style="padding:5px 8px; width:60%; font-size:9pt;">
+            Summe aller <strong>wahren</strong> Zahlen aus Aufgabe 3:<br>
+            <span style="font-size:8.5pt; color:#555;">_____ + _____ + _____ =</span>
+          </td>
+          <td style="padding:5px 8px; width:32%;">
+            <span style="display:inline-block; border-bottom:2px solid #555; min-width:50px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            &nbsp;<strong>(a)</strong>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:5px 8px; font-weight:bold; color:#8b6914; font-size:8.5pt;">②</td>
+          <td style="padding:5px 8px; font-size:9pt;">
+            Welche Stelle hast du in <strong>Aufgabe 1</strong> der<br>
+            🕊️ <em>Auferstehung / dem leeren Grab</em> gegeben?
+          </td>
+          <td style="padding:5px 8px;">
+            <span style="display:inline-block; border-bottom:2px solid #555; min-width:50px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            &nbsp;<strong>(b)</strong>
+          </td>
+        </tr>
+        <tr style="background:rgba(201,168,76,0.12);">
+          <td style="padding:6px 8px; font-weight:bold; color:#8b6914; font-size:8.5pt;">③</td>
+          <td style="padding:6px 8px; font-size:9pt; font-weight:bold;">
+            Code = (a) + (b) =
+            <span style="display:inline-block; border-bottom:1.5px solid #555; min-width:30px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            &nbsp;+&nbsp;
+            <span style="display:inline-block; border-bottom:1.5px solid #555; min-width:20px;">&nbsp;&nbsp;&nbsp;</span>
+          </td>
+          <td style="padding:6px 8px;">
+            = &nbsp;<span style="display:inline-block; border-bottom:2.5px solid #2a1a0a; min-width:50px; font-weight:bold; font-size:12pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+          </td>
+        </tr>
+      </table>
+
+      <div class="code-entry" style="margin-top:6px;">
+        <label>Mein Code:</label>
+        <div class="code-blanks">
+          <div class="cblank"></div>
+          <div class="cblank"></div>
+          <div class="cblank"></div>
+        </div>
+      </div>
+      <div class="code-hint">→ Tipp: Wenn die Reihenfolge in Aufgabe 1 und die Antworten in Aufgabe 3 stimmen, ergibt sich eine dreistellige Zahl!</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- AB 6: Das große Jahresfinale -->
+<!-- CODE: 741 -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="ab-header">
+    <div class="ab-icon">🏆</div>
+    <div class="ab-title-block">
+      <div class="ab-title">Rätsel 6 – Das große Jahresfinale</div>
+      <div class="ab-subtitle">Escape Room: Auf den Spuren Jesu &nbsp;·&nbsp; Jahrgang 6 Religion</div>
+    </div>
+    <div class="ab-badge">Arbeitsblatt 6</div>
+  </div>
+
+  <div class="name-line">
+    <span>Name: <span class="line"></span></span>
+    <span>Klasse: <span class="line" style="min-width:60px"></span></span>
+  </div>
+
+  <div class="info-box">
+    <p>Du hast in diesem Schuljahr viel über Jesus und seine Zeit gelernt. Jetzt beweist du, dass du alles im Überblick hast! Hier noch einmal das Wichtigste auf einen Blick:</p>
+    <p>Jesus wurde in <strong>Bethlehem</strong> geboren, wuchs in <strong>Nazareth</strong> auf und zog als Wanderprediger durch Palästina – eine Gesellschaft unter <strong>römischer Besatzung</strong> (Pax Romana). Das jüdische Volk war in verschiedene Gruppen geteilt: <strong>Pharisäer, Sadduzäer, Zeloten</strong> und <strong>Essener</strong>. Jesus trat für Arme und Ausgegrenzte ein. Mit seinen <strong>12 Jüngern</strong> verkündete er seine Botschaft. Der Begriff <strong>„Messias"</strong> bedeutet „der Gesalbte" – der von Gott gesandte Retter. Jesu Tod durch Kreuzigung und seine <strong>Auferstehung</strong> sind das Herzstück des christlichen Glaubens.</p>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">1</span> Erkläre drei Begriffe aus dem Schuljahr in je einem Satz.</div>
+    <table class="table">
+      <tbody>
+        <tr><td style="font-weight:bold; width:28%">Messias</td><td style="height:28px"></td></tr>
+        <tr><td style="font-weight:bold">Auferstehung</td><td style="height:28px"></td></tr>
+        <tr><td style="font-weight:bold">Schalom</td><td style="height:28px"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">2</span> Welche der vier jüdischen Gruppen findest du am interessantesten – und warum?</div>
+    <p style="font-size:9pt; border:1px solid #ccc; padding:6px; border-radius:3px; min-height:28px;"></p>
+  </div>
+
+  <div class="task-block">
+    <div class="task-label"><span class="task-num">3</span> Das große Jahres-Richtig-Falsch! Addiere die Zahlen der <em>wahren</em> Aussagen.</div>
+    <table class="rf-table">
+      <thead>
+        <tr>
+          <th style="width:60%">Aussage</th>
+          <th style="width:10%">Zahl</th>
+          <th style="width:15%">W &nbsp; / &nbsp; F</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="rf-stmt">A) Jesus hatte genau <em>12</em> Jünger um sich geschart.</td>
+          <td class="rf-zahl">700</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">B) Der Begriff „Messias" bedeutet „der Gesalbte" – der von Gott gesandte Retter.</td>
+          <td class="rf-zahl">40</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">C) Johannes der Täufer predigte auf dem Berg Sinai.</td>
+          <td class="rf-zahl">83</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">D) Im Judentum zu Jesu Zeit gab es nur eine einzige Gruppe – die Pharisäer.</td>
+          <td class="rf-zahl">56</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">E) Das Wort Schalom bedeutet umfassenden Frieden und Wohlsein für alle.</td>
+          <td class="rf-zahl">1</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+        <tr>
+          <td class="rf-stmt">F) Jesus wurde bereits am zweiten Tag nach seiner Kreuzigung auferweckt.</td>
+          <td class="rf-zahl">29</td>
+          <td class="rf-wf"><span class="wf-box">W</span> <span class="wf-box">F</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="code-box">
+    <div class="code-header">🔐 Dein Abschlusscode für Station 6 – öffne die Schatztruhe!</div>
+    <div class="code-body">
+      <div class="code-formula">Addiere nur die Zahlen der <strong>wahren</strong> Aussagen (W): _____ + _____ + _____ = ?</div>
+      <div class="code-entry">
+        <label>Mein Code:</label>
+        <div class="code-blanks">
+          <div class="cblank"></div>
+          <div class="cblank"></div>
+          <div class="cblank"></div>
+        </div>
+      </div>
+      <div class="code-hint">→ Gib diesen Code im digitalen Escape Room ein – und öffne die Schatztruhe!</div>
+    </div>
+  </div>
+
+  <!-- Lehrerlösungen ganz unten auf der letzten Seite, unauffällig -->
+  <div style="margin-top:18px; border-top:1px dashed #ccc; padding-top:6px;">
+    <p style="font-size:7pt; color:#bbb; text-align:center;">
+      Lösungen (nur für Lehrkräfte): AB1=243 · AB2=315 · AB3=174 · AB4=396 · AB5=528 · AB6=741
+      &nbsp;|&nbsp; AB5-Formel: R/F richtig: C(500)+D(20)+F(2)=522 · Stelle Auferstehung=6 · Code: 522+6=528
+    </p>
+  </div>
+</div>
+
+</body>
+</html>
