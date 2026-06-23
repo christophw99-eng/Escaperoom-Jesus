@@ -280,6 +280,50 @@ hr.divider { border:none; border-top:1px solid #c8a86a; margin:16px 0; opacity:.
 .ltable { width:100%; border-collapse:collapse; font-size:0.8rem; }
 .ltable th { background:#1a0a02; color:var(--gold); padding:6px 10px; text-align:left; }
 .ltable td { padding:6px 10px; border-bottom:1px solid #2a1a0a; color:#c4a472; vertical-align:top; }
+
+/* ── PASSWORT MODAL ── */
+.pw-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.75); z-index:1000;
+  align-items:center; justify-content:center;
+}
+.pw-overlay.open { display:flex; }
+.pw-box {
+  background: linear-gradient(160deg, #1a0a02, #3d1f08);
+  border: 2px solid var(--gold);
+  border-radius: 10px;
+  padding: 28px 32px;
+  max-width: 360px; width: 90%;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(201,168,76,.4);
+  animation: fadeUp .3s ease;
+}
+.pw-title { color: var(--gold); font-size: 1.1rem; margin-bottom: 6px; }
+.pw-sub { color: #c4a472; font-size: 0.8rem; margin-bottom: 18px; font-style:italic; }
+.pw-input {
+  width: 100%; padding: 10px 14px;
+  border: 2px solid #5a3a1a; border-radius: 5px;
+  background: #0f0500; color: #f5e6c8;
+  font-size: 1rem; font-family: Georgia,serif;
+  letter-spacing: 2px; text-align: center;
+  margin-bottom: 12px;
+}
+.pw-input:focus { outline:none; border-color: var(--gold); }
+.pw-btn {
+  background: linear-gradient(135deg, var(--dark-gold), var(--gold));
+  color: white; border: none; padding: 10px 24px;
+  border-radius: 5px; font-size: 0.9rem; font-weight: bold;
+  cursor: pointer; font-family: Georgia,serif;
+  width: 100%; margin-bottom: 8px; transition: all .2s;
+}
+.pw-btn:hover { opacity:.9; }
+.pw-cancel {
+  background: transparent; color: #6a4a2a; border: none;
+  font-size: 0.78rem; cursor: pointer; font-family: Georgia,serif;
+  text-decoration: underline;
+}
+.pw-err { color: #e07070; font-size: 0.8rem; margin-bottom:10px; display:none; }
+.pw-lock-icon { font-size: 2.5rem; margin-bottom: 10px; }
 </style>
 </head>
 <body>
@@ -843,8 +887,12 @@ hr.divider { border:none; border-top:1px solid #c8a86a; margin:16px 0; opacity:.
 
 <!-- LEHRER-BEREICH -->
 <div class="lehrer-wrap">
-  <button class="lehrer-toggle" onclick="toggleLehrer()">🔑 Lehrkraft: Lösungen &amp; Hinweise anzeigen</button>
+  <button class="lehrer-toggle" onclick="openLehrerModal()">🔑 Lehrkraft: Lösungen &amp; Hinweise (Passwortgeschützt)</button>
   <div class="lehrer-content" id="lehrerContent">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <span style="color:var(--gold); font-size:0.8rem; letter-spacing:1px;">✅ LEHRERBEREICH ENTSPERRT</span>
+      <button onclick="lockLehrer()" style="background:transparent; color:#6a4a2a; border:1px solid #3a2010; border-radius:4px; padding:4px 10px; font-size:0.72rem; cursor:pointer; font-family:Georgia,serif;">🔒 Sperren</button>
+    </div>
     <table class="ltable">
       <tr><th>Station</th><th>Richtige Antworten</th></tr>
       <tr><td><strong>1 – Wer war Jesus?</strong></td><td>Bethlehem · Nazareth · Johannes dem Täufer · Zimmermann · Wanderprediger</td></tr>
@@ -854,10 +902,35 @@ hr.divider { border:none; border-top:1px solid #c8a86a; margin:16px 0; opacity:.
       <tr><td><strong>5 – Leidensweg</strong></td><td>Richtige Reihenfolge: C→B→A→E→F→D (Einzug→Abendmahl→Gethsemane→Pilatus→Kreuzigung→Auferstehung)</td></tr>
       <tr><td><strong>6 – Wissenscheck</strong></td><td>12 · Tempel in Jerusalem · Der Gesalbte (Retter) · Garten Gethsemane · Leeres Grab · Pax=Macht/Schalom=Heil für alle</td></tr>
     </table>
+    <div style="margin-top:14px; padding:10px 12px; background:#1a0a02; border-radius:4px; color:#6a4a2a; font-size:0.75rem;">
+      <strong style="color:#8a6a2a;">AB-Codes:</strong>
+      Station 1: <strong style="color:#c4a472;">243</strong> &nbsp;|&nbsp;
+      Station 2: <strong style="color:#c4a472;">315</strong> &nbsp;|&nbsp;
+      Station 3: <strong style="color:#c4a472;">174</strong> &nbsp;|&nbsp;
+      Station 4: <strong style="color:#c4a472;">396</strong> &nbsp;|&nbsp;
+      Station 5: <strong style="color:#c4a472;">528</strong> &nbsp;|&nbsp;
+      Station 6: <strong style="color:#c4a472;">741</strong>
+    </div>
   </div>
 </div>
 
 </div><!-- /#app -->
+
+<!-- PASSWORT MODAL -->
+<div class="pw-overlay" id="pwOverlay">
+  <div class="pw-box">
+    <div class="pw-lock-icon">🔐</div>
+    <div class="pw-title">Lehrerbereich</div>
+    <div class="pw-sub">Nur für Lehrkräfte · Bitte Passwort eingeben</div>
+    <div class="pw-err" id="pwErr">❌ Falsches Passwort. Bitte erneut versuchen.</div>
+    <input class="pw-input" type="password" id="pwInput" placeholder="Passwort"
+      onkeydown="if(event.key==='Enter') checkPW()"
+      autocomplete="off">
+    <button class="pw-btn" onclick="checkPW()">🔓 Entsperren</button>
+    <br>
+    <button class="pw-cancel" onclick="closeLehrerModal()">Abbrechen</button>
+  </div>
+</div>
 
 <script>
 // ── STATE ──
@@ -929,10 +1002,46 @@ function toggleHint(id) {
   h.style.display = h.style.display === 'block' ? 'none' : 'block';
 }
 
-function toggleLehrer() {
+// ── LEHRERBEREICH PASSWORTSCHUTZ ──
+const LEHRER_PW = 'Lehrer2025';
+
+function openLehrerModal() {
   const c = document.getElementById('lehrerContent');
-  c.style.display = c.style.display === 'block' ? 'none' : 'block';
+  if (c.style.display === 'block') { lockLehrer(); return; }
+  document.getElementById('pwOverlay').classList.add('open');
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwErr').style.display = 'none';
+  setTimeout(() => document.getElementById('pwInput').focus(), 100);
 }
+
+function closeLehrerModal() {
+  document.getElementById('pwOverlay').classList.remove('open');
+}
+
+function checkPW() {
+  const val = document.getElementById('pwInput').value;
+  if (val === LEHRER_PW) {
+    closeLehrerModal();
+    document.getElementById('lehrerContent').style.display = 'block';
+    document.getElementById('lehrerContent').scrollIntoView({behavior:'smooth', block:'nearest'});
+  } else {
+    const err = document.getElementById('pwErr');
+    err.style.display = 'block';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+    document.getElementById('pwInput').style.borderColor = '#e07070';
+    setTimeout(() => document.getElementById('pwInput').style.borderColor = '#5a3a1a', 800);
+  }
+}
+
+function lockLehrer() {
+  document.getElementById('lehrerContent').style.display = 'none';
+}
+
+// Overlay schließen bei Klick außerhalb
+document.getElementById('pwOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeLehrerModal();
+});
 
 // ── TRUE/FALSE ──
 function setTF(id, val, btn) {
